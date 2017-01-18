@@ -6,20 +6,46 @@
 # python runkfactorizerr.py mykfactorytree.root myOutputFile.root compile
 # John Hakala 10/31/2016
 
-from ROOT import *
 import os, subprocess
-from sys import argv
+from optparse import OptionParser
+from datetime import datetime
+
+timestamp = '{:%Y-%m-%d_%H:%M}'.format(datetime.now())
+
+parser = OptionParser()
+parser.add_option("-x", "--loadOrCompile", dest="loadOrCompile", default="compile",
+                  help="either load or compile this macro [default: compile]"                )
+parser.add_option("-i", "--inputKtuple", dest="inputKtuple",
+                  help="the input kTuple"                                                    )
+parser.add_option("-o", "--outputFile", dest="outputFile", default="tmp%s.root" % timestamp,
+                  help="the output filename [default: tmp<timestamp>.root]"                  )
+parser.add_option("-q", "--quitAfter", dest="quitAfter",
+                  help="quit after processing this many events"                              )
+parser.add_option("-e", "--energyCutValue", dest="energyCutValue",
+                  help="the minimum rechit energy cut"                                       )
+parser.add_option("-b", action="store_true", dest="batch", default=False,
+                  help = "turn on batch mode"                                                )
+(options, args) = parser.parse_args()
+
+from ROOT import *
+if options.batch:
+  gROOT.SetBatch()
+ 
 
 # function to compile a C/C++ macro for loading into a pyroot session
-if len(argv) != 4:
-   print "please supply three arguments to the macro: the input ntuple, the output filename, and either 'load' or 'compile'."   
+if not options.loadOrCompile in ["load", "compile"]:
+   print "please specify the -x option as either 'load' or 'compile'."   
    exit(1)
-elif not (argv[3]=="load" or argv[3]=="compile"):
-   print "for the third argument, please pick 'load' or 'compile'."
+if not float(options.energyCutValue) >= 0:
+   print "please specify the minimum rechit energy cut in the -e option."   
+   exit(1)
+if not os.path.exists(options.inputKtuple):
+   print "input ktuple not found (%s)" % options.inputKtuple   
+   exit(1)
 else:
-   print "\nInput file is %s\n" % argv[1]
-   print "\nAttempting to %s kfactorizer.\n" % argv[3]
-   pastTense = "loaded" if argv[3]=="load" else "compiled"
+   print "\nInput file is %s\n" % options.inputKtuple
+   print "\nAttempting to %s kfactorizer.\n" % options.loadOrCompile
+   pastTense = "loaded" if options.loadOrCompile=="load" else "compiled"
 
 def deleteLibs(macroName):
         # remove the previously compiled libraries
@@ -32,24 +58,27 @@ def deleteLibs(macroName):
         # compile the macro using g++
 
 # call the compiling function to compile the HbbGammaSelector, then run its Loop() method
-if argv[3]=="compile":
+if options.loadOrCompile == "compile":
    deleteLibs("kfactorizer")
    exitCode = gSystem.CompileMacro("kfactorizer.C", "gOck")
    success=(exitCode==1)
-elif argv[3]=="load":
+elif options.loadOrCompile == "load":
    exitCode = gSystem.Load('kfactorizer_C')
    success=(exitCode>=-1)
 if not success:
-   print "\nError... kfactorizer failed to %s. :-("%argv[3]
+   print "\nError... kfactorizer failed to %s. :-(" % options.loadOrCompile
    print "Make sure you're using an up-to-date version of ROOT by running cmsenv in a 8_0_X>22 CMSSW area."
    exit(1)
 else:
    print "\nkfactorizer %s successfully."%pastTense
-   if argv[3]=="compile":
+   if options.loadOrCompile=="compile":
       gSystem.Load('kfactorizer_C')
-   file = TFile(argv[1])
+   file = TFile(options.inputKtuple)
    
    # get the ntuplizer/tree tree from the file specified by argument 1
    tree = file.Get("kfactorize/ktree")
    checker = kfactorizer(tree)
-checker.Loop(argv[2])
+if options.quitAfter is not None:
+  checker.Loop(options.outputFile, float(options.energyCutValue), int(options.quitAfter))
+else:
+  checker.Loop(options.outputFile, float(options.energyCutValue))

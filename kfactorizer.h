@@ -52,7 +52,11 @@ public :
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop(string outputfilename);
+   virtual void     Loop(string outputfilename, float energyCutValue, int quitAfter = -1, int reportEvery = 10000);
+   virtual void     compareClustering(short x, short y, float eventArray[65][75], float ratio, TH1D* ratiosOneCell, TH1D* ratiosTwoByTwo, TProfile* energyProfVsEta,
+                                    float topLeftBox, float topRightBox, float bottomLeftBox, float bottomRightBox, float mostEnergeticBox, 
+                                    bool isTopRight, bool isTopLeft, bool isBottomRight, bool isBottomLeft,
+                                    int nRechits[65], float totalEnergy[65], int nRechitsInThisPhiRing, bool debug=false);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    std::vector<std::pair<short, short> > GetNeighbors(short ieta, short iphi);
