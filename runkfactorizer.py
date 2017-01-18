@@ -91,9 +91,9 @@ else:
    
    # get the ktree from the file specified by argument 1
    print "kfactorizer will now be used to analyze tree '%s' in file '%s'" % (ktreeName, inFile.GetName())
-   tree = inFile.Get(ktreeName)
-   checker = kfactorizer(tree)
+   ktree = inFile.Get(ktreeName)
+   kinstance = kfactorizer(ktree)
 if options.quitAfter is not None:
-  checker.Loop(options.outputFile, options.energyCutValue, options.quitAfter)
+  kinstance.Loop(options.outputFile, options.energyCutValue, options.quitAfter)
 else:
-  checker.Loop(options.outputFile, options.energyCutValue)
+  kinstance.Loop(options.outputFile, options.energyCutValue)
