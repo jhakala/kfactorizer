@@ -1,5 +1,5 @@
 info = """
-Macro to check a tree in the kfactory ntuples.
+Macro to analyze a tree from the kfactory ntuplizer.
 This macro has two required options:
 -i is the input ktuple, and
 -e is the energy cut value.
