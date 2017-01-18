@@ -54,7 +54,6 @@ public :
    virtual void     Loop(string outputfilename, float energyCutValue, int quitAfter = -1, int reportEvery = 10000);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-   std::vector<std::pair<short, short> > GetNeighbors(short ieta, short iphi);
    float getDeta(short ieta);
    float getAbsEta(short ieta);
    float getEt(float kenergy, short ieta);
@@ -186,53 +185,6 @@ void kfactorizer::Show(Long64_t entry)
    fChain->Show(entry);
 }
 
-std::vector<std::pair<short, short> > kfactorizer::GetNeighbors(short ieta, short iphi) { 
-  vector<pair<short, short> > neighbors;
-  if (abs(ieta) <=  20 ) { 
-    up   = iphi+1 ;
-    down = iphi-1 ;
-    if (down == 0 ) down = 72 ;
-    if (up   == 73) up   = 1  ;
-    neighbors.push_back(make_pair(ieta   , up   ));
-    neighbors.push_back(make_pair(ieta   , down ));
-    if (! (ieta == -20 && iphi % 2 ==1 ) ) neighbors.push_back(make_pair(ieta-1 , up   ));
-    if (! (ieta ==  20 && iphi % 2 ==1 ) ) neighbors.push_back(make_pair(ieta+1 , up   ));
-    if (! (ieta == -20 && iphi % 2 ==0 ) ) neighbors.push_back(make_pair(ieta-1 , iphi ));  
-    if (! (ieta ==  20 && iphi % 2 ==0 ) ) neighbors.push_back(make_pair(ieta+1 , iphi ));  
-    if (! (ieta ==  20 && iphi % 2 ==1 ) ) neighbors.push_back(make_pair(ieta+1 , down )); 
-    else {
-     if (down-1 == 0) neighbors.push_back(make_pair(ieta+1 , 71 ));
-     else neighbors.push_back(make_pair(ieta+1 , down-1 ));
-    }
-    if (! (ieta == -20 && iphi % 2 ==1 ) ) neighbors.push_back(make_pair(ieta-1 , down ));
-    else {
-     if (down-1 == 0) neighbors.push_back(make_pair(ieta-1 , 71 ));
-     else neighbors.push_back(make_pair(ieta-1 , down-1 ));
-    }
-    return neighbors;
-  }  
-  else if (abs(ieta) <=29) {
-    up   = iphi+2 ;
-    down = iphi-2 ;
-    if (down == 0 ) down = 71 ;
-    if (up   == 72) up   = 1  ;
-    neighbors.push_back(make_pair(ieta   , up   ));
-    neighbors.push_back(make_pair(ieta   , down ));
-    if (ieta !=  29) neighbors.push_back(make_pair(ieta+1, iphi)); 
-    if (ieta !=  29) neighbors.push_back(make_pair(ieta+1, up)); 
-    if (ieta != -29) neighbors.push_back(make_pair(ieta-1, iphi)); 
-    if (ieta != -29) neighbors.push_back(make_pair(ieta-1, up)); 
-    if (ieta !=  21) neighbors.push_back(make_pair(ieta-1, down));
-    if (ieta != -21) neighbors.push_back(make_pair(ieta+1, down));
-    if (ieta ==  21){neighbors.push_back(make_pair(ieta-1, down+1)); 
-                     neighbors.push_back(make_pair(ieta-1, up-1  )); }
-    if (ieta == -21){neighbors.push_back(make_pair(ieta+1, down+1)); 
-                     neighbors.push_back(make_pair(ieta+1, up-1  )); }
-    
-  }
-  else neighbors.push_back(make_pair(999, -1));
-  return neighbors;
-}
 float kfactorizer::getDeta(short ieta) { 
   return edges[std::abs(ieta)]-edges[std::abs(ieta)-1];
 }
