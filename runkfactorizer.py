@@ -62,21 +62,23 @@ else:
    pastTense = "loaded" if options.loadOrCompile=="load" else "compiled"
 
 def deleteLibs(macroName):
-        # remove the previously compiled libraries
+   # removes the previously compiled libraries
    if path.exists(macroName+"_C_ACLiC_dict_rdict.pcm"):
       remove(macroName+"_C_ACLiC_dict_rdict.pcm")
    if path.exists(macroName+"_C.d"):
       remove(macroName+"_C.d")
    if path.exists(macroName+"_C.so"):
       remove(macroName+"_C.so")
-        # compile the macro using g++
 
-# call the compiling function to compile the HbbGammaSelector, then run its Loop() method
+# either get the the kfactorizer from a library or compile from source, then run its Loop() method
 if options.loadOrCompile == "compile":
+   # get rid of old libraries
    deleteLibs("kfactorizer")
+   # compile the macro fresh using g++
    exitCode = gSystem.CompileMacro("kfactorizer.C", "gOck")
    success=(exitCode==1)
 elif options.loadOrCompile == "load":
+   # load from old libraries
    exitCode = gSystem.Load('kfactorizer_C')
    success=(exitCode>=-1)
 if not success:
