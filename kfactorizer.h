@@ -48,15 +48,10 @@ public :
 
    kfactorizer(TTree *tree=0);
    virtual ~kfactorizer();
-   virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
    virtual void     Loop(string outputfilename, float energyCutValue, int quitAfter = -1, int reportEvery = 10000);
-   virtual void     compareClustering(short x, short y, float eventArray[65][75], float ratio, TH1D* ratiosOneCell, TH1D* ratiosTwoByTwo, TProfile* energyProfVsEta,
-                                    float topLeftBox, float topRightBox, float bottomLeftBox, float bottomRightBox, float mostEnergeticBox, 
-                                    bool isTopRight, bool isTopLeft, bool isBottomRight, bool isBottomLeft,
-                                    int nRechits[65], float totalEnergy[65], int nRechitsInThisPhiRing, bool debug=false);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    std::vector<std::pair<short, short> > GetNeighbors(short ieta, short iphi);
@@ -190,13 +185,7 @@ void kfactorizer::Show(Long64_t entry)
    if (!fChain) return;
    fChain->Show(entry);
 }
-Int_t kfactorizer::Cut(Long64_t entry)
-{
-// This function may be called from Loop.
-// returns  1 if entry is accepted.
-// returns -1 otherwise.
-   return 1;
-}
+
 std::vector<std::pair<short, short> > kfactorizer::GetNeighbors(short ieta, short iphi) { 
   vector<pair<short, short> > neighbors;
   if (abs(ieta) <=  20 ) { 

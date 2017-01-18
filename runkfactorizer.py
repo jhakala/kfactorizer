@@ -1,9 +1,14 @@
-# Macro to check a tree in the kfactory ntuples
-# This macro has two required options:
-# -i is the input ktuple
-# -e is the energy cut value
-# Example: 
-# python runkfactorizer.py -i ktuple.root -e 2.5
+info = """
+Macro to check a tree in the kfactory ntuples.
+This macro has two required options:
+-i is the input ktuple, and
+-e is the energy cut value.
+"""
+
+example = """
+  Example:
+   python runkfactorizer.py -i ktuple.root -e 2.5
+"""
 # 
 # for more info, please run: 
 # python runkfactorizer.py --help
@@ -16,25 +21,30 @@ from datetime import datetime
 
 timestamp = '{:%Y-%m-%d_%H:%M}'.format(datetime.now())
 
-parser = OptionParser()
+parser = OptionParser(description = info, epilog = example)
 parser.add_option("-x", "--loadOrCompile", dest="loadOrCompile", default="compile",
-                  help="either load or compile this macro [default: compile]"                )
+                  type="string", help="either load or compile this macro [default: compile]" )
 parser.add_option("-i", "--inputKtuple", dest="inputKtuple",
-                  help="the input kTuple"                                                    )
+                  type="string", help="the input kTuple"                                     )
 parser.add_option("-o", "--outputFile", dest="outputFile", default="tmp%s.root" % timestamp,
-                  help="the output filename [default: tmp<timestamp>.root]"                  )
+                  type="string", help="the output filename [default: tmp<timestamp>.root]"   )
 parser.add_option("-q", "--quitAfter", dest="quitAfter",
-                  help="quit after processing this many events"                              )
+                  type="int",    help="quit after processing this many events"               )
 parser.add_option("-e", "--energyCutValue", dest="energyCutValue",
-                  help="the minimum rechit energy cut"                                       )
+                  type="float",  help="the minimum rechit energy cut"                        )
 parser.add_option("-b", action="store_true", dest="batch", default=False,
-                  help = "turn on batch mode"                                                )
+                                 help = "turn on batch mode"                                 )
 (options, args) = parser.parse_args()
+
+if options.inputKtuple is None or options.energyCutValue is None:
+  parser.print_help()
+  exit(1) 
 
 from ROOT import *
 if options.batch:
   gROOT.SetBatch()
  
+ktreeName = "kfactorize/ktree"
 
 # function to compile a C/C++ macro for loading into a pyroot session
 if not options.loadOrCompile in ["load", "compile"]:
@@ -77,12 +87,13 @@ else:
    print "\nkfactorizer %s successfully."%pastTense
    if options.loadOrCompile=="compile":
       gSystem.Load('kfactorizer_C')
-   file = TFile(options.inputKtuple)
+   inFile = TFile(options.inputKtuple)
    
-   # get the ntuplizer/tree tree from the file specified by argument 1
-   tree = file.Get("kfactorize/ktree")
+   # get the ktree from the file specified by argument 1
+   print "kfactorizer will now be used to analyze tree '%s' in file '%s'" % (ktreeName, inFile.GetName())
+   tree = inFile.Get(ktreeName)
    checker = kfactorizer(tree)
 if options.quitAfter is not None:
-  checker.Loop(options.outputFile, float(options.energyCutValue), int(options.quitAfter))
+  checker.Loop(options.outputFile, options.energyCutValue, options.quitAfter)
 else:
-  checker.Loop(options.outputFile, float(options.energyCutValue))
+  checker.Loop(options.outputFile, options.energyCutValue)
