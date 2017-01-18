@@ -6,6 +6,7 @@ The macro is run via [`runkfactorizer.py`](runkfactorizer.py).
 It requires two options:
   * `-i` is the input ktuple
   * `-e` is the energy cut value
+
 Example:
 ```bash
 python runkfactorizer.py -i ktuple.root -e 2.5
