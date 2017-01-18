@@ -15,7 +15,7 @@ example = """
 # 
 # John Hakala 10/31/2016
 
-import os, subprocess
+from os import path, remove
 from optparse import OptionParser
 from datetime import datetime
 
@@ -53,7 +53,7 @@ if not options.loadOrCompile in ["load", "compile"]:
 if not float(options.energyCutValue) >= 0:
    print "please specify the minimum rechit energy cut in the -e option."   
    exit(1)
-if not os.path.exists(options.inputKtuple):
+if not path.exists(options.inputKtuple):
    print "input ktuple not found (%s)" % options.inputKtuple   
    exit(1)
 else:
@@ -63,12 +63,12 @@ else:
 
 def deleteLibs(macroName):
         # remove the previously compiled libraries
-   if os.path.exists(macroName+"_C_ACLiC_dict_rdict.pcm"):
-      os.remove(macroName+"_C_ACLiC_dict_rdict.pcm")
-   if os.path.exists(macroName+"_C.d"):
-      os.remove(macroName+"_C.d")
-   if os.path.exists(macroName+"_C.so"):
-      os.remove(macroName+"_C.so")
+   if path.exists(macroName+"_C_ACLiC_dict_rdict.pcm"):
+      remove(macroName+"_C_ACLiC_dict_rdict.pcm")
+   if path.exists(macroName+"_C.d"):
+      remove(macroName+"_C.d")
+   if path.exists(macroName+"_C.so"):
+      remove(macroName+"_C.so")
         # compile the macro using g++
 
 # call the compiling function to compile the HbbGammaSelector, then run its Loop() method
