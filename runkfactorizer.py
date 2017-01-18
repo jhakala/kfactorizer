@@ -1,9 +1,13 @@
 # Macro to check a tree in the kfactory ntuples
-# This macro takes three arguments
-# The first argument is the input file, the tree that will be checked is the "kfactorize/ktree" tree
-# The second argument is the output file
+# This macro has two required options:
+# -i is the input ktuple
+# -e is the energy cut value
 # Example: 
-# python runkfactorizerr.py mykfactorytree.root myOutputFile.root compile
+# python runkfactorizer.py -i ktuple.root -e 2.5
+# 
+# for more info, please run: 
+# python runkfactorizer.py 
+# 
 # John Hakala 10/31/2016
 
 import os, subprocess
