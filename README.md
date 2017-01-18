@@ -10,4 +10,4 @@ Example:
 ```python runkfactorizer.py -i ktuple.root -e 2.5```
 
 for more info, please run:
-```python runkfactorizer.py```
+```python runkfactorizer.py --help```

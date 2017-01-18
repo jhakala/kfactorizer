@@ -6,7 +6,7 @@
 # python runkfactorizer.py -i ktuple.root -e 2.5
 # 
 # for more info, please run: 
-# python runkfactorizer.py 
+# python runkfactorizer.py --help
 # 
 # John Hakala 10/31/2016
 
